@@ -1,0 +1,40 @@
+/****************
+ * FONT IMPORTS *
+ ****************/
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+
+/******************
+ * TAILWIND SETUP *
+ ******************/
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "hugo_stats.json";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/******************
+ * FLOWBITE SETUP *
+ ******************/
+
+/* @import "flowbite/src/themes/default"; */
+@plugin "flowbite/plugin";
+@source "../../node_modules/flowbite";
+
+/**************
+ * COMPONENTS *
+ **************/
+
+@layer components {
+  .btn-cta {
+    @apply rounded-md shadow-sm;
+    @apply bg-indigo-600 hover:bg-indigo-800;
+    @apply px-3.5 py-2.5;
+    @apply text-sm font-semibold text-indigo-50;
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600;
+  }
+}

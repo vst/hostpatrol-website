@@ -1,0 +1,257 @@
+{{- /* ========= Base inputs & fallbacks ========= */ -}}
+{{- $isHome := .IsHome -}}
+{{- $siteTitle := .Site.Title -}}
+{{- $pageTitle := .Title | default "" -}}
+{{- $title := $siteTitle -}}
+{{- if and (not $isHome) (ne $pageTitle "") -}}
+  {{- $title = printf "%s • %s" $pageTitle $siteTitle -}}
+{{- end -}}
+
+{{- $summary := .Summary | plainify -}}
+{{- $siteDesc := .Site.Params.description | plainify -}}
+{{- $descRaw := .Params.description | default $summary | default $siteDesc -}}
+{{- $desc := $descRaw | plainify | replaceRE "\\s+" " " | strings.TrimSpace | truncate 160 -}}
+{{- $notFoundDesc := "The page you are looking for could not be found on Host Patrol." -}}
+
+{{- $siteBase := .Site.BaseURL | default "" -}}
+{{- if not (strings.HasPrefix $siteBase "http://") -}}
+  {{- if not (strings.HasPrefix $siteBase "https://") -}}
+    {{- $siteBase = "https://www.hostpatrol.io" -}}
+  {{- end -}}
+{{- end -}}
+{{- $siteBase = strings.TrimSuffix "/" $siteBase -}}
+{{- $siteRoot := printf "%s/" $siteBase -}}
+
+{{- $canonical := .Params.canonical -}}
+{{- if or (not $canonical) (eq $canonical "") -}}
+  {{- $path := .RelPermalink | default "/" -}}
+  {{- if not (strings.HasPrefix $path "/") -}}
+    {{- $path = printf "/%s" $path -}}
+  {{- end -}}
+  {{- $canonical = printf "%s%s" $siteBase $path -}}
+{{- else if not (strings.HasPrefix $canonical "http://") -}}
+  {{- if not (strings.HasPrefix $canonical "https://") -}}
+    {{- $path := $canonical -}}
+    {{- if not (strings.HasPrefix $path "/") -}}
+      {{- $path = printf "/%s" $path -}}
+    {{- end -}}
+    {{- $canonical = printf "%s%s" $siteBase $path -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if eq .Kind "404" -}}
+  {{- $desc = $notFoundDesc -}}
+{{- end -}}
+
+{{- $author := .Site.Params.copyright.owner.name | default "Host Patrol" -}}
+
+{{- $langCode := .Site.LanguageCode | default "en-us" -}}
+{{- $langCodeTpl := split (replace $langCode "_" "-") "-" -}}
+{{- $ogLocale := cond (eq (len $langCodeTpl) 2) (printf "%s_%s" (lower (index $langCodeTpl 0)) (upper (index $langCodeTpl 1))) (lower (index $langCodeTpl 0)) -}}
+{{- $bcp47 := cond (eq (len $langCodeTpl) 2) (printf "%s-%s" (lower (index $langCodeTpl 0)) (upper (index $langCodeTpl 1))) (lower (index $langCodeTpl 0)) -}}
+
+{{- $img := .Params.ogImage | default .Params.image | default .Site.Params.media.ogImage -}}
+{{- $imgAlt := .Params.ogImageAlt | default .Params.imageAlt | default .Site.Params.ogImageAlt -}}
+{{- if and $img (not (or (hasPrefix $img "http://") (hasPrefix $img "https://") (hasPrefix $img "//"))) -}}
+  {{- $img = absURL $img -}}
+{{- end -}}
+
+{{- /* Robots: default index,follow; 404, draft, or explicit noindex -> noindex */ -}}
+{{- $robots := "index,follow" -}}
+{{- if or (eq .Kind "404") (.Params.noindex) (.Draft) -}}
+  {{- $robots = "noindex,nofollow" -}}
+{{- end -}}
+
+{{- /* OG type: default to article, but treat home and utility nodes as website */ -}}
+{{- $ogType := "article" -}}
+{{- if $isHome -}}
+  {{- $ogType = "website" -}}
+{{- else if in (slice "404" "taxonomy" "term" "RSS" "sitemap" "robotsTXT") .Kind -}}
+  {{- $ogType = "website" -}}
+{{- end -}}
+{{- with .Params.ogType -}}
+  {{- $ogType = . -}}
+{{- end -}}
+
+
+<!-- Basic Meta Tags -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#f9fafb" />
+<title>{{ $title }}</title>
+<meta name="description" content="{{ $desc }}" />
+{{- with $author -}}
+  <meta name="author" content="{{ . }}" />
+{{- end -}}
+<link rel="canonical" href="{{ $canonical }}" />
+<meta name="robots" content="{{ $robots }}" />
+
+<!-- Favicons & App Icons -->
+<meta name="apple-mobile-web-app-title" content="Host Patrol" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="manifest" href="/site.webmanifest" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="192x192"
+  href="/web-app-manifest-192x192.png" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="512x512"
+  href="/web-app-manifest-512x512.png" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="{{ $ogType }}" />
+<meta property="og:title" content="{{ $title }}" />
+<meta property="og:description" content="{{ $desc }}" />
+<meta property="og:url" content="{{ $canonical }}" />
+<meta property="og:site_name" content="{{ $siteTitle }}" />
+{{- with $img -}}
+  <meta property="og:image" content="{{ . }}" />
+  {{- with $imgAlt -}}
+    <meta property="og:image:alt" content="{{ . }}" />
+  {{- end -}}
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+{{- end -}}
+<meta property="og:locale" content="{{ $ogLocale }}" />
+{{- if eq $ogType "article" -}}
+  {{- with .PublishDate -}}
+    <meta
+      property="article:published_time"
+      content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />
+  {{- end -}}
+  {{- with .Lastmod -}}
+    <meta
+      property="article:modified_time"
+      content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />
+    <meta
+      property="og:updated_time"
+      content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />
+  {{- end -}}
+{{- end -}}
+
+
+<!-- Twitter -->
+<meta
+  name="twitter:card"
+  content="{{ cond $img "summary_large_image" "summary" }}" />
+{{- with $img -}}
+  <meta name="twitter:image" content="{{ . }}" />
+  {{- with $imgAlt -}}
+    <meta name="twitter:image:alt" content="{{ . }}" />
+  {{- end -}}
+{{- end -}}
+<meta name="twitter:title" content="{{ $title }}" />
+<meta name="twitter:description" content="{{ $desc }}" />
+
+<!-- Tailwind CSS via Hugo Pipes -->
+{{- with (templates.Defer (dict "key" "global")) -}}
+  {{- partial "css.html" . -}}
+{{- end -}}
+
+
+<!-- Preconnect hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://unpkg.com" />
+{{- with .Site.Params.media.url -}}
+  <link rel="preconnect" href="{{ . }}" />
+{{- end -}}
+
+
+<!-- Flowbite -->
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+<!-- Lucide Web via CDN -->
+<script defer src="https://unpkg.com/lucide@0.544.0"></script>
+
+<!-- Plausible Analytics -->
+{{- with .Site.Params.plausible.domain -}}
+  <script
+    defer
+    src="/ax/js/script.js"
+    data-api="/ax/api/event"
+    data-domain="{{ . }}"></script>
+{{- end -}}
+
+
+<!-- JSON-LD: Organization (site-wide) -->
+{{- $org := dict
+  "@context" "https://schema.org"
+  "@type" "Organization"
+  "name" $siteTitle
+  "url" $siteRoot
+-}}
+{{- with .Site.Params.media.logo.default -}}
+  {{- $org = merge $org (dict "logo" .) -}}
+{{- end -}}
+<script type="application/ld+json">{{ $org }}</script>
+
+<!-- JSON-LD: WebSite (site-wide) -->
+{{- $website := dict
+  "@context" "https://schema.org"
+  "@type" "WebSite"
+  "name" $siteTitle
+  "url" $siteRoot
+  "inLanguage" $bcp47
+-}}
+<script type="application/ld+json">{{ $website }}</script>
+
+<!-- JSON-LD: WebPage (per page baseline) -->
+{{- $webpage := dict
+  "@context" "https://schema.org"
+  "@type" "WebPage"
+  "name" $title
+  "url" $canonical
+  "inLanguage" $bcp47
+  "description" $desc
+-}}
+{{- with $img -}}
+  {{- $webpage = merge $webpage (dict "image" (slice .)) -}}
+{{- end -}}
+{{- with .Params.keywords -}}
+  {{- $webpage = merge $webpage (dict "keywords" .) -}}
+{{- end -}}
+{{- $webpage = merge $webpage (dict "isPartOf" (dict "@type" "WebSite" "name" $siteTitle "url" $siteRoot)) -}}
+<script type="application/ld+json">{{ $webpage }}</script>
+
+<!-- JSON-LD: SoftwareApplication (site-wide) -->
+{{- $software := dict
+  "@context" "https://schema.org"
+  "@type" "SoftwareApplication"
+  "name" "Host Patrol"
+  "applicationCategory" "DeveloperApplication"
+  "operatingSystem" "Linux, macOS"
+  "softwareVersion" "latest"
+  "url" $siteRoot
+  "downloadUrl" "https://github.com/vst/hostpatrol/releases/latest"
+  "license" "https://opensource.org/license/mit"
+  "sameAs" (slice "https://github.com/vst/hostpatrol")
+-}}
+{{- with $author -}}
+  {{- $software = merge $software (dict "author" (dict "@type" "Person" "name" .)) -}}
+{{- end -}}
+<script type="application/ld+json">{{ $software }}</script>
+
+<!-- JSON-LD: BreadcrumbList (all non-home pages) -->
+{{- if and (not $isHome) .Ancestors -}}
+  {{- $anc := .Ancestors.Reverse -}}
+  {{- $crumbs := slice -}}
+  {{- $pos := 1 -}}
+  {{- range $p := $anc -}}
+    {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" $pos "name" $p.Title "item" $p.Permalink) -}}
+    {{- $pos = add $pos 1 -}}
+  {{- end -}}
+  {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" $pos "name" .Title "item" $canonical) -}}
+  {{- $bc := dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $crumbs -}}
+  <script type="application/ld+json">{{ $bc }}</script>
+{{- end -}}
+
+{{- block "head" . -}}{{- end -}}

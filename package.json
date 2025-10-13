@@ -1,0 +1,64 @@
+{
+  "name": "hostpatrolio",
+  "description": "Host Patrol Website",
+  "private": true,
+  "scripts": {
+    "dev": "hugo server",
+    "format:prettier": "prettier --write .",
+    "format:taplo": "taplo fmt",
+    "format": "npm run format:prettier && npm run format:taplo",
+    "lint:format:prettier": "prettier --check .",
+    "lint:format:taplo": "taplo fmt --check",
+    "lint:format": "npm run lint:format:prettier && npm run lint:format:taplo",
+    "lint:taplo": "taplo check",
+    "lint": "npm run lint:format && npm run lint:taplo",
+    "check:format": "npm run check:format:prettier && npm run check:format:taplo",
+    "check": "npm run lint && npm run build",
+    "clean": "rm -rf public/ resources/_gen/",
+    "resources:favicon": "curl -fsSL https://media.hostpatrol.io/identity/favicon.tar.gz | tar -xzv -C static/",
+    "resources": "npm run resources:favicon",
+    "build:hugo": "hugo build --gc --minify",
+    "build": "npm run clean && npm run resources && npm run build:hugo"
+  },
+  "dependencies": {
+    "flowbite": "^3.1.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.14",
+    "@tailwindcss/typography": "^0.5.19",
+    "prettier": "^3.6.2",
+    "prettier-plugin-go-template": "^0.0.15",
+    "prettier-plugin-tailwindcss": "^0.7.0",
+    "tailwindcss": "^4.1.14"
+  },
+  "prettier": {
+    "printWidth": 80,
+    "proseWrap": "always",
+    "useTabs": false,
+    "plugins": [
+      "prettier-plugin-go-template",
+      "prettier-plugin-tailwindcss"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.html"
+        ],
+        "options": {
+          "parser": "go-template",
+          "goTemplateBracketSpacing": true,
+          "bracketSameLine": true
+        }
+      },
+      {
+        "files": [
+          "*.js",
+          "*.ts"
+        ],
+        "options": {
+          "singleQuote": false
+        }
+      }
+    ]
+  }
+}

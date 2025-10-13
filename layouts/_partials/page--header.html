@@ -1,0 +1,97 @@
+{{- $page := .page }}
+{{- $menuID := .menuID }}
+
+{{- with index site.Menus $menuID }}
+  <nav class="border-b border-gray-200 bg-gray-100">
+    <div
+      class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between px-4 py-3">
+      {{- partial "inline/menu/logo.html" -}}
+      {{- partial "inline/menu/button-collapse.html" -}}
+      {{- partial "inline/menu/links.html" (dict "page" $page "menuEntries" .) -}}
+    </div>
+  </nav>
+{{- end }}
+
+{{- define "partials/inline/menu/logo.html" }}
+  <a
+    href="{{ site.Home.RelPermalink }}"
+    class="flex flex-row items-center gap-3">
+    <img
+      src="{{ site.Params.media.logo.light }}"
+      alt="Host Patrol Logo"
+      class="h-6" />
+    <span class="sr-only">{{ site.Title }}</span>
+  </a>
+{{- end }}
+
+{{- define "partials/inline/menu/button-collapse.html" }}
+  <button
+    data-collapse-toggle="navbar-default"
+    type="button"
+    class="inline-flex size-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:ring-2 focus:ring-gray-200 focus:outline-none md:hidden"
+    aria-controls="navbar-default"
+    aria-expanded="false">
+    <i data-lucide="menu" class="h-6 w-6"></i>
+    <span class="sr-only">Open main menu</span>
+  </button>
+{{- end }}
+
+{{- define "partials/inline/menu/links.html" }}
+  <div id="navbar-default" class="hidden w-full md:block md:w-auto">
+    <ul
+      class="mt-4 flex flex-col p-4 md:mt-0 md:flex-row md:gap-8 md:border-0 md:p-0">
+      {{- partial "inline/menu/walk.html" . }}
+    </ul>
+  </div>
+{{- end }}
+
+{{- define "partials/inline/menu/walk.html" }}
+  {{- $page := .page }}
+
+  {{- range .menuEntries }}
+    {{- $attrs := dict "href" .URL "title" .Title }}
+
+    {{- if $page.IsMenuCurrent .Menu . }}
+      {{- $attrs = merge $attrs (dict "class" "active" "aria-current" "page") }}
+    {{- else if $page.HasMenuCurrent .Menu . }}
+      {{- $attrs = merge $attrs (dict "class" "ancestor" "aria-current" "true") }}
+    {{- end }}
+
+    {{- with .Params.anchor_attrs -}}
+      {{- $attrs = merge $attrs . }}
+    {{- end -}}
+
+    {{- $name := .Name }}
+
+    {{- with .Identifier }}
+      {{- with T . }}
+        {{- $name = . }}
+      {{- end }}
+    {{- end }}
+
+    {{- $classList := "block rounded-sm px-3 py-2 font-normal text-gray-900 hover:bg-gray-100 aria-[current=page]:font-semibold aria-[current=true]:font-semibold md:border-0 md:p-0 md:hover:bg-transparent md:hover:text-blue-700" }}
+    {{- with index $attrs "class" }}
+      {{- $classList = printf "%s %s" $classList . }}
+    {{- end }}
+
+
+    <li>
+      <a
+        class="{{ $classList }}"
+        {{- range $k, $v := $attrs }}
+          {{- if ne $k "class" }}
+            {{- with $v }}
+              {{- printf " %s=%q" $k $v | safeHTMLAttr }}
+            {{- end }}
+          {{- end }}
+        {{- end -}}
+        >{{ .Pre }}{{ $name }}</a
+      >
+      {{- with .Children }}
+        <ul>
+          {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
+        </ul>
+      {{- end }}
+    </li>
+  {{- end }}
+{{- end }}

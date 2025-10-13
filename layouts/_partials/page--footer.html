@@ -1,0 +1,20 @@
+{{ $copyOwnerName := .Site.Params.copyright.owner.name }}
+{{ $copyOwnerWebsite := .Site.Params.copyright.owner.website }}
+{{ $copySince := .Site.Params.copyright.since }}
+{{ $copyUntil := now.Format "2006" }}
+
+
+<footer class="my-2 text-center font-extralight">
+  <p>
+    &copy;
+    {{ $copySince }}&ndash;{{ $copyUntil }}
+    <a
+      href="{{ $copyOwnerWebsite }}"
+      class="font-medium underline"
+      target="_blank"
+      rel="noopener"
+      >{{ $copyOwnerName }}</a
+    >.
+  </p>
+  <p class="text-sm">All rights reserved.</p>
+</footer>

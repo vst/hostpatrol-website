@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {{- partial "html--head.html" . -}}
+  </head>
+  <body
+    class="flex min-h-screen w-full flex-col bg-gray-50 text-gray-900 antialiased">
+    {{- partial "page--header.html" (dict "menuID" "main" "page" .) -}}
+    {{- block "content" . -}}
+      <main
+        class="mx-auto flex w-full max-w-6xl grow flex-col px-4 sm:px-6 lg:px-8">
+        {{- block "main" . -}}{{- end -}}
+      </main>
+    {{- end -}}
+    {{- partial "page--footer.html" . -}}
+    {{- partial "page--script.html" . -}}
+  </body>
+</html>

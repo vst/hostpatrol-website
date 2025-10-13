@@ -1,0 +1,43 @@
+# Hugo build output
+/public/
+/resources/_gen/
+/assets/jsconfig.json
+
+# Hugo cache
+/.hugo_build.lock
+/hugo_stats.json
+
+# Node dependencies (if using npm/yarn for asset pipelines)
+/node_modules/
+
+# Build artifacts
+/dist/
+/*.tar.gz
+/*.zip
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDEs/editors
+.vscode/
+.idea/
+*.sw?
+*~
+
+# Logs
+*.log
+
+# Nix
+/.direnv
+/.envrc
+
+# Others
+/tmp
+/static/apple-touch-icon.png
+/static/favicon-96x96.png
+/static/favicon.ico
+/static/favicon.svg
+/static/site.webmanifest
+/static/web-app-manifest-192x192.png
+/static/web-app-manifest-512x512.png
