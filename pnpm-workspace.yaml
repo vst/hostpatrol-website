@@ -1,0 +1,6 @@
+nodeLinker: hoisted
+preferSymlinkedExecutables: true
+allowBuilds:
+  "@parcel/watcher": true
+onlyBuiltDependencies:
+  - "@parcel/watcher"

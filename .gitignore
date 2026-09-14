@@ -1,39 +1,21 @@
-# Hugo build output
-/public/
-/resources/_gen/
-/assets/jsconfig.json
-
-# Hugo cache
-/.hugo_build.lock
-/hugo_stats.json
-
-# Node dependencies (if using npm/yarn for asset pipelines)
-/node_modules/
-
-# Build artifacts
-/dist/
-/*.tar.gz
-/*.zip
-
-# OS-specific files
-.DS_Store
-Thumbs.db
-
-# IDEs/editors
-.vscode/
-.idea/
-*.sw?
-*~
-
-# Logs
-*.log
-
-# Nix
+## Nix ignores:
 /.direnv
 /.envrc
 
-# Others
-/tmp
+## Hugo specific ignores:
+/public
+/resources
+.hugo_build.lock
+hugo_stats.json
+
+## Node.js ignores:
+/node_modules
+
+## Cloudflare Wrangler local dev cache and secrets (see package.json's dev-serve script):
+/.dev.vars
+/.wrangler
+
+## Favicon files (see package.json's generate:favicon script):
 /static/apple-touch-icon.png
 /static/favicon-96x96.png
 /static/favicon.ico
@@ -41,3 +23,7 @@ Thumbs.db
 /static/site.webmanifest
 /static/web-app-manifest-192x192.png
 /static/web-app-manifest-512x512.png
+
+## Various ignores:
+.DS_Store
+/tmp

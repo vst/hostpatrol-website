@@ -1,0 +1,32 @@
+name: "Test and Build Website"
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Test and Build Website"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout main"
+        uses: "actions/checkout@v7"
+
+      - name: "Install Nix"
+        uses: "DeterminateSystems/nix-installer-action@v23"
+
+      - name: "Install Nix Dependencies"
+        run: |
+          nix develop .#ci --command true
+
+      - name: "Install Node Dependencies"
+        run: |
+          nix develop .#ci --command bash -c "pnpm install --frozen-lockfile"
+
+      - name: "Test Website"
+        run: |
+          nix develop .#ci --command bash -c "pnpm run check"
+
+      - name: "Build Website"
+        run: |
+          nix develop .#ci --command bash -c "pnpm run build"

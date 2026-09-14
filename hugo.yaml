@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=https://www.schemastore.org/hugo.json
+
+title: "Host Patrol"
+baseURL: "/"
+locale: "en-us"
+disableKinds: ["taxonomy", "term"]
+
+#####################
+## SITE PARAMETERS ##
+#####################
+
+params:
+  media:
+    url: "https://media.hostpatrol.io"
+    ogImage: "https://media.hostpatrol.io/site/meta/og-default.png"
+    logo:
+      default: "https://media.hostpatrol.io/site/logo.svg"
+      light: "https://media.hostpatrol.io/site/meta/logo-light.svg"
+      dark: "https://media.hostpatrol.io/site/meta/logo-dark.svg"
+  copyright:
+    since: 2024
+    owner:
+      name: "Vehbi Sinan Tunalioglu"
+      website: "https://www.thenegation.com"
+
+##########
+## MENU ##
+##########
+
+menus:
+  main:
+    - name: "Home"
+      title: "Home Page"
+      pageRef: "/"
+      weight: 10
+    - name: "Quickstart"
+      title: "Quickstart Guide"
+      pageRef: "/quickstart"
+      weight: 20
+    - name: "Console"
+      title: "Web-Based Console Application"
+      url: "https://console.hostpatrol.io"
+      weight: 30
+      params:
+        anchor_attrs:
+          target: "_blank"
+          rel: "noopener"
+    - title: "GitHub Repository"
+      pre:
+        '<img class="size-6"
+        src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/github.svg"
+        alt="GitHub" />'
+      url: "https://github.com/vst/hostpatrol"
+      weight: 40
+      params:
+        anchor_attrs:
+          target: "_blank"
+          rel: "noopener noreferrer"
+
+#########################
+## BUILD CONFIGURATION ##
+#########################
+
+build:
+  noJSConfigInAssets: true
+  buildStats:
+    enable: true
+  cachebusters:
+    - source: "assets/notwatching/hugo_stats\\.json"
+      target: "css"
+    - source: "(postcss|tailwind)\\.config\\.js"
+      target: "css"
+
+module:
+  mounts:
+    - source: "assets"
+      target: "assets"
+    - source: "static"
+      target: "static"
+    - disableWatch: true
+      source: "hugo_stats.json"
+      target: "assets/notwatching/hugo_stats.json"

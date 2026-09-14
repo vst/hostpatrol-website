@@ -45,7 +45,7 @@
 
 {{- $author := .Site.Params.copyright.owner.name | default "Host Patrol" -}}
 
-{{- $langCode := .Site.LanguageCode | default "en-us" -}}
+{{- $langCode := .Site.Language.Locale | default "en-us" -}}
 {{- $langCodeTpl := split (replace $langCode "_" "-") "-" -}}
 {{- $ogLocale := cond (eq (len $langCodeTpl) 2) (printf "%s_%s" (lower (index $langCodeTpl 0)) (upper (index $langCodeTpl 1))) (lower (index $langCodeTpl 0)) -}}
 {{- $bcp47 := cond (eq (len $langCodeTpl) 2) (printf "%s-%s" (lower (index $langCodeTpl 0)) (upper (index $langCodeTpl 1))) (lower (index $langCodeTpl 0)) -}}
@@ -167,20 +167,34 @@
 <!-- Flowbite -->
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"
+  integrity="sha384-sDs+8++trWbG/uXXC/F5Np3aMvmI/TYHN2wGN/xLWVsmhso7QSuJsa0Bym8izV32"
+  crossorigin="anonymous"></script>
 
 <!-- Lucide Web via CDN -->
-<script defer src="https://unpkg.com/lucide@0.544.0"></script>
+<script
+  defer
+  src="https://unpkg.com/lucide@0.544.0"
+  integrity="sha384-hK2uiaqTSh/v1VqRxmuMQL4xmt5n0DdyBCOItx2fAs7Wv+WC8Tu0yDW1j12JooyM"
+  crossorigin="anonymous"></script>
 
-<!-- Plausible Analytics -->
-{{- with .Site.Params.plausible.domain -}}
-  <script
-    defer
-    src="/ax/js/script.js"
-    data-api="/ax/api/event"
-    data-domain="{{ . }}"></script>
-{{- end -}}
-
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="/r/v1/s.js?v=pa" data-api="/r/v1/e"></script>
+<script>
+  ((window.plausible =
+    window.plausible ||
+    function () {
+      (plausible.q = plausible.q || []).push(arguments);
+    }),
+    (plausible.init =
+      plausible.init ||
+      function (i) {
+        plausible.o = i || {};
+      }));
+  plausible.init({
+    endpoint: "/r/v1/e",
+  });
+</script>
 
 <!-- JSON-LD: Organization (site-wide) -->
 {{- $org := dict
